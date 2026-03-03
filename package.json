@@ -1,0 +1,31 @@
+{
+  "name": "create-switch-framework-app",
+  "version": "0.1.0",
+  "description": "Create a Switch Framework app",
+  "github": "https://github.com/Switcherfaiz/create-switch-framework-app",
+  "author":"Switcherfaiz",
+  "bin": {
+    "create-switch-framework-app": "./bin/create-switch-framework-app.js"
+  },
+  "type": "module",
+  "keywords": [
+    "cli",
+    "scaffold",
+    "create-app",
+    "switch-framework"
+  ],
+  "files": [
+    "bin",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "enquirer": "^2.4.1",
+    "fs-extra": "^11.2.0",
+    "ora": "^8.0.1"
+  },
+  "license": "MIT"
+}

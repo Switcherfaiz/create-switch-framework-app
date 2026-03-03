@@ -1,0 +1,19 @@
+{
+  "appId": "com.switchframework.app",
+  "productName": "Switch Framework App",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "**/*"
+  ],
+  "win": {
+    "target": "nsis"
+  },
+  "mac": {
+    "target": "dmg"
+  },
+  "linux": {
+    "target": "AppImage"
+  }
+}
