@@ -1,12 +1,10 @@
-export class SwTabBar extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._unsub = null;
-  }
+import { SwitchComponent } from '/switch-framework/index.js';
+import { navigate } from '/switch-framework/router/index.js';
 
-  connectedCallback() {
-    this.render();
+export class SwTabBar extends SwitchComponent {
+  static tag = 'sw-tab-bar';
+
+  connected() {
     this.updateActive();
 
     if (globalStates?.subscribe) {
@@ -17,12 +15,11 @@ export class SwTabBar extends HTMLElement {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
-      const navigate = globalStates?.getState ? globalStates.getState('navigate') : null;
-      if (typeof navigate === 'function') navigate(route);
+      navigate(route);
     });
   }
 
-  disconnectedCallback() {
+  disconnected() {
     if (this._unsub) this._unsub();
   }
 
@@ -39,25 +36,10 @@ export class SwTabBar extends HTMLElement {
     tabs.forEach((t) => {
       const el = this.shadowRoot.getElementById(`tab-${t.name}`);
       if (!el) return;
-      const isActive = String(activeRoute || '').startsWith(String(t.name));
+      const matchList = Array.isArray(t.match) ? t.match : [t.name].filter(Boolean);
+      const isActive = matchList.some((m) => String(activeRoute || '').startsWith(String(m)) || String(activeRoute || '') === String(m));
       el.classList.toggle('active', isActive);
     });
-  }
-
-  render() {
-    const tabs = this.getTabs();
-
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
-      <nav class="bar" aria-label="Bottom tabs">
-        ${tabs.map((t) => `
-          <button class="tab" id="tab-${t.name}" data-route="${t.name}" type="button">
-            <span class="icon">${this.getIcon(t.icon)}</span>
-            <span class="label">${t.title || t.name}</span>
-          </button>
-        `).join('')}
-      </nav>
-    `;
   }
 
   getIcon(name) {
@@ -67,6 +49,24 @@ export class SwTabBar extends HTMLElement {
       settings: `<span class='switch_icon_gear'></span>`
     };
     return map[name] || map.home;
+  }
+
+  render() {
+    const tabs = this.getTabs();
+
+    return `
+      <nav class="bar" aria-label="Bottom tabs">
+        ${tabs.map((t) => {
+          const route = t.initialRoute || (t.path ? t.path.replace(/^\//, '') : t.name);
+          return `
+          <button class="tab" id="tab-${t.name}" data-route="${route || t.name}" type="button">
+            <span class="icon">${this.getIcon(t.icon)}</span>
+            <span class="label">${t.title || t.name}</span>
+          </button>
+        `;
+        }).join('')}
+      </nav>
+    `;
   }
 
   styleSheet() {
@@ -146,8 +146,4 @@ export class SwTabBar extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-tab-bar')) {
-  customElements.define('sw-tab-bar', SwTabBar);
 }

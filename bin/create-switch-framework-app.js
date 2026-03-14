@@ -252,7 +252,7 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
   // When --use-local is set, we intentionally do NOT add switch-framework deps to package.json
   // to avoid npm registry fetching during testing. We will npm link them instead.
   if (!useLocal) {
-    deps['switch-framework'] = '^0.1.0';
+    deps['switch-framework'] = '^0.2.0';
     deps['switch-framework-backend'] = '^0.1.0';
   }
 
@@ -469,6 +469,8 @@ async function main() {
     // Ensure no spinner state bleeds into final output
     spinner.stop();
 
+    const docsUrl = 'https://github.com/Switcherfaiz/switch-framework-docs';
+
     console.log('\n' + chalk.green(chalk.bold('Success!')));
     console.log('\nNext steps:');
     console.log('  ' + chalk.cyan('cd ' + projectName));
@@ -486,11 +488,14 @@ async function main() {
     } else if (appType === 'electron') {
       console.log('  ' + chalk.cyan('npm run electron:dev'));
     } else {
-      console.log('  ' + chalk.cyan('npm run dev'));
+      console.log('  ' + chalk.cyan('cd web && npm run dev'));
       console.log('  ' + chalk.cyan('npm run electron:dev'));
       console.log('\nNote: web UI lives in ./web and electron files in ./electron');
     }
 
+    console.log('\n' + chalk.bold('Docs:'));
+    console.log('  ' + chalk.cyan(docsUrl));
+    console.log('  Clone the repo, run ' + chalk.cyan('npm run dev') + ', then open http://localhost:3000');
     console.log('');
   } catch (err) {
     spinner.fail('Failed');

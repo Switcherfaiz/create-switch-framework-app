@@ -1,20 +1,14 @@
-export class SwStarterSplashScreen extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
+import { SwitchComponent } from '/switch-framework/index.js';
 
-  connectedCallback() {
-    this.render();
-  }
+export class SwStarterSplashScreen extends SwitchComponent {
+  static tag = 'sw-starter-splash';
 
   render() {
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="wrap">
         <div class="card">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Expo" />
+            <img class="logo" src="/assets/logo.svg" alt="Switch" />
           </div>
           <div class="title">Switch Framework</div>
           <div class="sub">Launching...</div>
@@ -133,8 +127,4 @@ export class SwStarterSplashScreen extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-starter-splash')) {
-  customElements.define('sw-starter-splash', SwStarterSplashScreen);
 }

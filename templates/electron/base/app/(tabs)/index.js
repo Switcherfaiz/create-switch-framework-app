@@ -1,55 +1,40 @@
-export const screen = {
-  name: 'home',
-  path: '/home',
-  title: 'Home',
-  tag: 'sw-home-screen',
-  layout: 'tabs'
-};
+import { SwitchComponent } from '/switch-framework/index.js';
 
-export class SwHomeScreen extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  connectedCallback() {
-    this.render();
-  }
+export class SwHomeScreen extends SwitchComponent {
+  static screenName = 'home';
+  static path = '/home';
+  static title = 'Home';
+  static tag = 'sw-home-screen';
+  static layout = 'tabs';
 
   render() {
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="wrap">
         <div class="spacer-top"></div>
-        
         <div class="hero">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Expo" />
+            <img class="logo" src="/assets/logo.svg" alt="Switch" />
           </div>
           <div class="title">Tabs View</div>
         </div>
-
         <div class="spacer-middle"></div>
-
         <div class="section">
           <div class="label">GET STARTED</div>
-          
           <div class="card">
             <div class="row">
               <div class="l">Try editing</div>
-              <div class="r">src/app/index.tsx</div>
+              <div class="r">app/(tabs)/index.js</div>
             </div>
             <div class="row">
-              <div class="l">Dev tools</div>
-              <div class="r">cmd+d</div>
+              <div class="l">Layout</div>
+              <div class="r">app/_layout.js</div>
             </div>
             <div class="row">
-              <div class="l">Fresh start</div>
-              <div class="r">npm reset project</div>
+              <div class="l">State</div>
+              <div class="r">createState in init</div>
             </div>
           </div>
         </div>
-
         <div class="spacer-bottom"></div>
       </div>
     `;
@@ -65,12 +50,7 @@ export class SwHomeScreen extends HTMLElement {
           height: 100%;
           background: var(--bg, #fff);
         }
-
-        * {
-          box-sizing: border-box;
-          font-family: inherit;
-        }
-
+        * { box-sizing: border-box; font-family: inherit; }
         .wrap {
           width: 100%;
           height: 100%;
@@ -79,12 +59,7 @@ export class SwHomeScreen extends HTMLElement {
           align-items: center;
           padding: 0 16px;
         }
-
-        .spacer-top {
-          flex: 1;
-          min-height: 40px;
-        }
-
+        .spacer-top { flex: 1; min-height: 40px; }
         .hero {
           display: flex;
           flex-direction: column;
@@ -92,7 +67,6 @@ export class SwHomeScreen extends HTMLElement {
           gap: 20px;
           text-align: center;
         }
-
         .logo-container {
           display: flex;
           align-items: center;
@@ -103,13 +77,7 @@ export class SwHomeScreen extends HTMLElement {
           border-radius: 32px;
           box-shadow: 0 20px 40px rgba(0, 145, 255, 0.3);
         }
-
-        .logo {
-          width: 70px;
-          height: 70px;
-          filter: brightness(0) invert(1);
-        }
-
+        .logo { width: 70px; height: 70px; filter: brightness(0) invert(1); }
         .title {
           font-weight: 700;
           color: var(--main_text, #000);
@@ -117,12 +85,7 @@ export class SwHomeScreen extends HTMLElement {
           line-height: 1.1;
           letter-spacing: -0.5px;
         }
-
-        .spacer-middle {
-          flex: 0.8;
-          min-height: 20px;
-        }
-
+        .spacer-middle { flex: 0.8; min-height: 20px; }
         .section {
           width: 100%;
           display: flex;
@@ -130,7 +93,6 @@ export class SwHomeScreen extends HTMLElement {
           gap: 12px;
           max-width: 400px;
         }
-
         .label {
           font-weight: 600;
           font-size: 12px;
@@ -139,7 +101,6 @@ export class SwHomeScreen extends HTMLElement {
           text-transform: uppercase;
           padding: 0 12px;
         }
-
         .card {
           width: 100%;
           background: #f5f5f5;
@@ -150,11 +111,7 @@ export class SwHomeScreen extends HTMLElement {
           gap: 0;
           overflow: hidden;
         }
-
-        :root[data-theme="dark"] .card {
-          background: rgba(255, 255, 255, 0.08);
-        }
-
+        :root[data-theme="dark"] .card { background: rgba(255, 255, 255, 0.08); }
         .row {
           width: 100%;
           display: flex;
@@ -165,25 +122,10 @@ export class SwHomeScreen extends HTMLElement {
           border-radius: 16px;
           transition: background 0.2s ease;
         }
-
-        .row:active {
-          background: rgba(0, 0, 0, 0.08);
-        }
-
-        :root[data-theme="dark"] .row {
-          background: rgba(255, 255, 255, 0.06);
-        }
-
-        :root[data-theme="dark"] .row:active {
-          background: rgba(255, 255, 255, 0.12);
-        }
-
-        .l {
-          font-weight: 600;
-          color: var(--main_text, #000);
-          font-size: 14px;
-        }
-
+        .row:active { background: rgba(0, 0, 0, 0.08); }
+        :root[data-theme="dark"] .row { background: rgba(255, 255, 255, 0.06); }
+        :root[data-theme="dark"] .row:active { background: rgba(255, 255, 255, 0.12); }
+        .l { font-weight: 600; color: var(--main_text, #000); font-size: 14px; }
         .r {
           font-weight: 500;
           color: var(--sub_text, #666);
@@ -194,25 +136,10 @@ export class SwHomeScreen extends HTMLElement {
           font-size: 11px;
           white-space: nowrap;
         }
-
-        :root[data-theme="dark"] .r {
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .spacer-bottom {
-          flex: 1;
-          min-height: 20px;
-        }
-        @media (max-width: 600px) {
-          .title {
-            font-size: 32px;
-          }
-        }
+        :root[data-theme="dark"] .r { background: rgba(255, 255, 255, 0.1); }
+        .spacer-bottom { flex: 1; min-height: 20px; }
+        @media (max-width: 600px) { .title { font-size: 32px; } }
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-home-screen')) {
-  customElements.define('sw-home-screen', SwHomeScreen);
 }
