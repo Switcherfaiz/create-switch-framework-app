@@ -1,3 +1,6 @@
+import { SwitchComponent } from 'switch-framework';
+import { navigate, goBack, getActivePath } from 'switch-framework/router';
+
 export const screen = {
   name: '+not-found',
   path: '/+not-found',
@@ -6,35 +9,29 @@ export const screen = {
   layout: 'stack'
 };
 
-export class SwUserNotFoundScreen extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
+export class SwUserNotFoundScreen extends SwitchComponent {
+  static screenName = '+not-found';
+  static path = '/+not-found';
+  static title = 'Not Found';
+  static tag = 'sw-user-not-found-screen';
+  static layout = 'stack';
 
-  static get observedAttributes() {
-    return ['path'];
-  }
-
-  connectedCallback() {
-    this.render();
-  }
-
-  attributeChangedCallback() {
-    this.render();
+  onMount() {
+    this.listener('#home', 'click', () => navigate('home'));
+    this.listener('#back', 'click', () => goBack());
   }
 
   render() {
-    const path = this.getAttribute('path') || window.location.pathname || '';
+    const path = getActivePath();
+    const safePath = this._escapeHtml(path);
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="wrap">
         <div class="card">
           <div class="code">404</div>
           <div class="h">This screen does not exist</div>
           <div class="p">No screen is registered for:</div>
-          <div class="path">${path}</div>
+          <div class="path">${safePath}</div>
 
           <div class="row">
             <button class="btn" id="home">Go to Home</button>
@@ -43,17 +40,15 @@ export class SwUserNotFoundScreen extends HTMLElement {
         </div>
       </div>
     `;
+  }
 
-    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      const navigate = globalStates?.getState ? globalStates.getState('navigate') : null;
-      if (typeof navigate === 'function') navigate('home');
-    });
-
-    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      const goBack = globalStates?.getState ? globalStates.getState('go_back') : null;
-      if (typeof goBack === 'function') goBack();
-      else window.history.back();
-    });
+  _escapeHtml(value = '') {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 
   styleSheet() {
@@ -151,8 +146,4 @@ export class SwUserNotFoundScreen extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-user-not-found-screen')) {
-  customElements.define('sw-user-not-found-screen', SwUserNotFoundScreen);
 }

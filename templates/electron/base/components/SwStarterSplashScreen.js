@@ -1,4 +1,4 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent } from 'switch-framework';
 
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
@@ -8,7 +8,7 @@ export class SwStarterSplashScreen extends SwitchComponent {
       <div class="wrap">
         <div class="card">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Switch" />
+            <img class="logo" src="/assets/logo.svg" alt="Switch Framework" />
           </div>
           <div class="title">Switch Framework</div>
           <div class="sub">Launching...</div>

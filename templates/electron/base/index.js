@@ -1,4 +1,4 @@
-import { startApp } from '/switch-framework/index.js';
+import { startApp } from 'switch-framework';
 import layout from './app/_layout.js';
 
 startApp(layout);

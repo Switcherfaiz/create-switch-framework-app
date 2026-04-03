@@ -1,15 +1,12 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { navigate } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
 
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
 
   connected() {
     this.updateActive();
-
-    if (globalStates?.subscribe) {
-      this._unsub = globalStates.subscribe(() => this.updateActive());
-    }
+    this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
     this.shadowRoot.addEventListener('click', (e) => {
       const btn = e.target?.closest?.('button[data-route]');
@@ -30,13 +27,13 @@ export class SwTabBar extends SwitchComponent {
   }
 
   updateActive() {
-    const activeRoute = globalStates?.getState ? globalStates.getState('activeRoute') : '';
+    const activeRoute = getActiveRoute();
     const tabs = this.getTabs();
 
     tabs.forEach((t) => {
-      const el = this.shadowRoot.getElementById(`tab-${t.name}`);
+      const el = this.shadowRoot?.getElementById?.(`tab-${t.name}`);
       if (!el) return;
-      const matchList = Array.isArray(t.match) ? t.match : [t.name].filter(Boolean);
+      const matchList = Array.isArray(t?.match) ? t.match : [t.name].filter(Boolean);
       const isActive = matchList.some((m) => String(activeRoute || '').startsWith(String(m)) || String(activeRoute || '') === String(m));
       el.classList.toggle('active', isActive);
     });

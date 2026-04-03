@@ -150,37 +150,29 @@ async function askQuestions({ projectName, yes, noInstall, appTypeOverride, port
 function serverJsTemplate({ port, appType }) {
   const staticRoot = appType === 'both' ? 'web' : '.';
 
-  return `const express = require('express');\n` +
-    `const session = require('express-session');\n` +
+  return `require('dotenv').config();\n\n` +
     `const path = require('node:path');\n` +
-    `require('dotenv').config();\n\n` +
-    `const { checkRestrict } = require('switch-framework-backend/middleware');\n\n` +
-    `const app = express();\n` +
-    `const PORT = process.env.PORT ? Number(process.env.PORT) : ${port};\n\n` +
-    `app.use(express.json({ limit: '25mb' }));\n\n` +
-    `app.use(session({\n` +
-    `  secret: process.env.SESSION_SECRET || 'dev-secret',\n` +
-    `  resave: false,\n` +
-    `  saveUninitialized: false\n` +
-    `}));\n\n` +
-    `// Serve switch-framework to the browser from node_modules\n` +
-    `app.use('/switch-framework', express.static(path.join(__dirname, 'node_modules', 'switch-framework')));\n\n` +
-    `// Serve project files\n` +
-    `app.use(express.static(path.join(__dirname, '${staticRoot}')));\n\n` +
-    `const restrictConfig = {\n` +
-    `  public: ['/', '/login'],\n` +
-    `  rules: [\n` +
-    `    { prefix: '/admin', roles: ['admin'] },\n` +
-    `    { prefix: '/billing', roles: ['billing', 'admin'] },\n` +
-    `    { path: '/login', roles: ['*'] }\n` +
-    `  ]\n` +
-    `};\n\n` +
-    `app.use(checkRestrict(restrictConfig));\n\n` +
-    `app.get('*', (req, res) => {\n` +
-    `  res.sendFile(path.join(__dirname, '${staticRoot}', 'index.html'));\n` +
+    `const switchFrameworkBackend = require('switch-framework-backend');\n\n` +
+    `switchFrameworkBackend.config({\n` +
+    `  PORT: process.env.PORT ? Number(process.env.PORT) : ${port},\n` +
+    `  staticRoot: path.join(__dirname, '${staticRoot}'),\n` +
+    `  session: {\n` +
+    `    secret: process.env.SESSION_SECRET || 'dev-secret',\n` +
+    `    resave: false,\n` +
+    `    saveUninitialized: false\n` +
+    `  }\n` +
     `});\n\n` +
-    `app.listen(PORT, () => {\n` +
-    `  console.log('Switch Framework app running at http://localhost:' + PORT);\n` +
+    `const app = switchFrameworkBackend();\n\n` +
+    `app.initServer((server) => {\n` +
+    `  const restrictConfig = {\n` +
+    `    public: ['/', '/login'],\n` +
+    `    rules: [\n` +
+    `      { prefix: '/admin', roles: ['admin'] },\n` +
+    `      { prefix: '/billing', roles: ['billing', 'admin'] },\n` +
+    `      { path: '/login', roles: ['*'] }\n` +
+    `    ]\n` +
+    `  };\n` +
+    `  server.use(switchFrameworkBackend.checkRestrict(restrictConfig));\n` +
     `});\n`;
 }
 
@@ -252,8 +244,8 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
   // When --use-local is set, we intentionally do NOT add switch-framework deps to package.json
   // to avoid npm registry fetching during testing. We will npm link them instead.
   if (!useLocal) {
-    deps['switch-framework'] = '^0.2.0';
-    deps['switch-framework-backend'] = '^0.1.0';
+    deps['switch-framework'] = '^0.2.3';
+    deps['switch-framework-backend'] = '^0.2.0';
   }
 
   const pkg = {
@@ -270,8 +262,8 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
 
   if (appType === 'electron' || appType === 'both') {
     pkg.devDependencies = {
-      electron: '^31.3.1',
-      'electron-builder': '^24.13.3'
+      electron: 'latest',
+      'electron-builder': 'latest'
     };
   }
 
@@ -289,9 +281,10 @@ async function copyDir(srcDir, destDir) {
   });
 }
 
-async function runNpmInstall({ cwd }) {
+async function runNpmInstall({ cwd, packages = [] }) {
+  const args = packages.length ? ['install', ...packages] : ['install'];
   return new Promise((resolve, reject) => {
-    const child = require('node:child_process').spawn('npm', ['install'], {
+    const child = require('node:child_process').spawn('npm', args, {
       cwd,
       stdio: 'inherit',
       shell: process.platform === 'win32'
@@ -323,7 +316,22 @@ async function runNpmLink({ cwd, packages }) {
   });
 }
 
+const DOCS_URL = 'https://github.com/Switcherfaiz/switch-framework-docs';
+
+function getCliVersion() {
+  try {
+    const pkgPath = path.join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    return pkg.version || '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+}
+
 async function main() {
+  const cliVersion = getCliVersion();
+  console.log(chalk.cyan(`\nWelcome to switch-framework CLI v${cliVersion}\n`));
+
   const { help, yes, noInstall, useLocal, appType: appTypeArg, port: portArg, projectName: rawProjectName } = parseArgs(process.argv);
   if (help) {
     printHelp();
@@ -447,6 +455,10 @@ async function main() {
       spinner.start('Installing dependencies (npm install)...');
       try {
         await runNpmInstall({ cwd: targetDir });
+        if (!useLocal) {
+          spinner.start('Ensuring switch-framework packages...');
+          await runNpmInstall({ cwd: targetDir, packages: ['switch-framework', 'switch-framework-backend'] });
+        }
         spinner.succeed('Dependencies installed');
       } catch (e) {
         spinner.warn('npm install failed (project was still created)');
@@ -469,8 +481,6 @@ async function main() {
     // Ensure no spinner state bleeds into final output
     spinner.stop();
 
-    const docsUrl = 'https://github.com/Switcherfaiz/switch-framework-docs';
-
     console.log('\n' + chalk.green(chalk.bold('Success!')));
     console.log('\nNext steps:');
     console.log('  ' + chalk.cyan('cd ' + projectName));
@@ -488,14 +498,12 @@ async function main() {
     } else if (appType === 'electron') {
       console.log('  ' + chalk.cyan('npm run electron:dev'));
     } else {
-      console.log('  ' + chalk.cyan('cd web && npm run dev'));
+      console.log('  ' + chalk.cyan('npm run dev'));
       console.log('  ' + chalk.cyan('npm run electron:dev'));
       console.log('\nNote: web UI lives in ./web and electron files in ./electron');
     }
 
-    console.log('\n' + chalk.bold('Docs:'));
-    console.log('  ' + chalk.cyan(docsUrl));
-    console.log('  Clone the repo, run ' + chalk.cyan('npm run dev') + ', then open http://localhost:3000');
+    console.log('\n' + chalk.gray('Read the docs: ') + chalk.cyan(DOCS_URL));
     console.log('');
   } catch (err) {
     spinner.fail('Failed');

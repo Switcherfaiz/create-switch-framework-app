@@ -22,4 +22,30 @@ npm i -g create-switch-framework-app
 create-switch-framework-app my-app
 ```
 
+## Switch Framework Docs (run locally)
+To view the Switch Framework documentation website on your PC:
+
+1. Clone the docs repo:
+```bash
+git clone https://github.com/Switcherfaiz/switch-framework-docs
+```
+
+2. Install dependencies:
+```bash
+cd switch-framework-docs
+npm install
+```
+
+3. Start the dev server:
+```bash
+npm run dev
+```
+
+4. Open in your browser:
+```text
+http://localhost:3000
+```
+
+If the port is different, check `switch-framework-docs/package.json` (`switchFramework.port`).
+
 Made by Switcherfaiz

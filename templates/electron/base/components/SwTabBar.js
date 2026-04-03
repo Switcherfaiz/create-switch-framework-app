@@ -1,26 +1,27 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { navigate } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
 
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
 
-  connected() {
+  onMount() {
     this.updateActive();
+    if (!this._unsub) this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
-    if (globalStates?.subscribe) {
-      this._unsub = globalStates.subscribe(() => this.updateActive());
-    }
-
-    this.shadowRoot.addEventListener('click', (e) => {
+    // Delegated click handler; safe to call on every render.
+    this.listener('button[data-route]', 'click', (e) => {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
-      navigate(route);
+      if (route) navigate(route);
     });
   }
 
-  disconnected() {
-    if (this._unsub) this._unsub();
+  onDestroy() {
+    if (this._unsub) {
+      this._unsub();
+      this._unsub = null;
+    }
   }
 
   getTabs() {
@@ -30,13 +31,13 @@ export class SwTabBar extends SwitchComponent {
   }
 
   updateActive() {
-    const activeRoute = globalStates?.getState ? globalStates.getState('activeRoute') : '';
+    const activeRoute = getActiveRoute();
     const tabs = this.getTabs();
 
     tabs.forEach((t) => {
-      const el = this.shadowRoot.getElementById(`tab-${t.name}`);
+      const el = this.shadowRoot?.getElementById?.(`tab-${t.name}`);
       if (!el) return;
-      const matchList = Array.isArray(t.match) ? t.match : [t.name].filter(Boolean);
+      const matchList = Array.isArray(t?.match) ? t.match : [t.name].filter(Boolean);
       const isActive = matchList.some((m) => String(activeRoute || '').startsWith(String(m)) || String(activeRoute || '') === String(m));
       el.classList.toggle('active', isActive);
     });

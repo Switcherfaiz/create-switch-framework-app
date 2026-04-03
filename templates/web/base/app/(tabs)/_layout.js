@@ -1,9 +1,9 @@
-import { TabLayout, registerComponents } from '/switch-framework/index.js';
-import { SwTabBar } from '/components/SwTabBar.js';
-
-registerComponents([SwTabBar]);
+import { TabLayout, registerComponents } from 'switch-framework';
+import { SwTabBar } from '../../components/SwTabBar.js';
 import { SwHomeScreen } from './index.js';
 import { SwExploreScreen } from './explore.js';
+
+registerComponents([SwTabBar]);
 
 export class SwTabsLayout extends TabLayout {
   static tag = 'sw-tabs-layout';
@@ -15,7 +15,8 @@ export class SwTabsLayout extends TabLayout {
       icon: 'home',
       path: '/home',
       screen: 'sw-home-screen',
-      match: ['home']
+      match: ['home'],
+      initialRoute: 'home'
     },
     {
       name: 'explore',
@@ -23,7 +24,8 @@ export class SwTabsLayout extends TabLayout {
       icon: 'compass',
       path: '/explore',
       screen: 'sw-explore-screen',
-      match: ['explore']
+      match: ['explore'],
+      initialRoute: 'explore'
     }
   ];
   static options = { position: 'bottom' };
@@ -46,11 +48,17 @@ export class SwTabsLayout extends TabLayout {
         :host {
           display: flex;
           flex-direction: column;
+          width: 100%;
           height: inherit;
           overflow: hidden;
           font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         }
-        * { box-sizing: border-box; font-family: inherit; }
+
+        * {
+          box-sizing: border-box;
+          font-family: inherit;
+        }
+
         .layout {
           min-height: 0;
           height: 100%;
@@ -58,12 +66,14 @@ export class SwTabsLayout extends TabLayout {
           grid-template-rows: minmax(0, 1fr) auto;
           overflow: hidden;
         }
+
         .tabbar {
           height: auto;
           position: sticky;
           bottom: 0;
           z-index: 50;
         }
+
         .tabcontainer {
           z-index: 1;
           min-height: 0;
@@ -75,3 +85,5 @@ export class SwTabsLayout extends TabLayout {
     `;
   }
 }
+
+export default SwTabsLayout;
