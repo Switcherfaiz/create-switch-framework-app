@@ -51,14 +51,14 @@ export class SwHomeScreen extends SwitchComponent {
         :host {
           display: block;
           padding: 0;
-          font-family: var(--font, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+          font-family: 'Montserrat', sans-serif;
           height: 100%;
           background: var(--bg, #fff);
         }
 
         * {
           box-sizing: border-box;
-          font-family: inherit;
+          font-family: 'Montserrat', sans-serif;
         }
 
         .wrap {
@@ -101,6 +101,7 @@ export class SwHomeScreen extends SwitchComponent {
         }
 
         .title {
+          font-family: 'Montserrat', sans-serif;
           font-weight: 700;
           color: var(--main_text, #000);
           font-size: 36px;

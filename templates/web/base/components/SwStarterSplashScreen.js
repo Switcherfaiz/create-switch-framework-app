@@ -3,18 +3,44 @@ import { SwitchComponent } from 'switch-framework';
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
 
+  onMount() {
+    this.updateLogo();
+    this.setupThemeListener();
+  }
+
+  setupThemeListener() {
+    const handleThemeChange = () => this.updateLogo();
+    document.addEventListener('theme:change', handleThemeChange);
+    this.addOnDestroy(() => {
+      document.removeEventListener('theme:change', handleThemeChange);
+    });
+  }
+
+  updateLogo() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches &&
+                    !document.documentElement.getAttribute('data-theme'));
+    const logoImg = this.select('.logo');
+    if (logoImg) {
+      logoImg.src = isDark
+        ? '/assets/files/Switch_framework_logo_white.svg'
+        : '/assets/files/Switch_framework_logo_purple.svg';
+    }
+  }
+
   render() {
     return `
       <div class="wrap">
         <div class="card">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Switch Framework" />
+            <img class="logo" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" />
           </div>
           <div class="title">Switch Framework</div>
           <div class="sub">Launching...</div>
-          
-          <div class="loader-container">
-            <div class="loader"></div>
+        </div>
+        <div class="linear-loader-container">
+          <div class="linear-loader">
+            <div class="linear-loader-bar"></div>
           </div>
         </div>
       </div>
@@ -40,9 +66,11 @@ export class SwStarterSplashScreen extends SwitchComponent {
         .wrap {
           height: 100%;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           padding: 18px;
+          position: relative;
         }
 
         .card {
@@ -59,16 +87,14 @@ export class SwStarterSplashScreen extends SwitchComponent {
           justify-content: center;
           width: 100px;
           height: 100px;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
-          border-radius: 28px;
-          box-shadow: 0 20px 40px rgba(0, 145, 255, 0.25);
           animation: fadeInScale 0.6s ease-out;
         }
 
         .logo {
-          width: 56px;
-          height: 56px;
-          filter: brightness(0) invert(1);
+          width: 80px;
+          height: 80px;
+          object-fit: contain;
+          animation: rotateLogo 2s linear infinite;
         }
 
         .title {
@@ -85,23 +111,50 @@ export class SwStarterSplashScreen extends SwitchComponent {
           animation: fadeIn 0.8s ease-out 0.3s both;
         }
 
-        .loader-container {
-          margin-top: 12px;
+        .linear-loader-container {
+          position: absolute;
+          bottom: 48px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(280px, 80%);
           animation: fadeIn 0.8s ease-out 0.4s both;
         }
 
-        .loader {
-          width: 48px;
-          height: 48px;
-          border: 3px solid rgba(0, 145, 255, 0.15);
-          border-top: 3px solid #0091ff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
+        .linear-loader {
+          width: 100%;
+          height: 4px;
+          background: var(--surface_2, rgba(0,0,0,0.1));
+          border-radius: 2px;
+          overflow: hidden;
         }
 
-        @keyframes spin {
+        .linear-loader-bar {
+          height: 100%;
+          width: 40%;
+          background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 25%, #a855f7 50%, #ec4899 75%, #f43f5e 100%);
+          border-radius: 2px;
+          animation: linearProgress 1.5s ease-in-out infinite;
+          background-size: 200% 100%;
+        }
+
+        @keyframes rotateLogo {
+          from {
+            transform: rotate(0deg);
+          }
           to {
             transform: rotate(360deg);
+          }
+        }
+
+        @keyframes linearProgress {
+          0% {
+            transform: translateX(-100%);
+          }
+          50% {
+            transform: translateX(75%);
+          }
+          100% {
+            transform: translateX(250%);
           }
         }
 

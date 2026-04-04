@@ -21,7 +21,7 @@ export class SwIndexScreen extends SwitchComponent {
 
         <div class="hero">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Switch Framework" />
+            <img class="logo" src="/assets/files/Switch_framework_logo_round_purple.svg" alt="Switch Framework" />
           </div>
           <div class="title">Introducing<br>Switch Framework</div>
         </div>
@@ -62,13 +62,13 @@ export class SwIndexScreen extends SwitchComponent {
           width: 100%;
           height: 100vh;
           padding: 0;
-          font-family: var(--font, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+          font-family: 'Montserrat', sans-serif;
           background: var(--bg, #fff);
         }
 
         * {
           box-sizing: border-box;
-          font-family: inherit;
+          font-family: 'Montserrat', sans-serif;
         }
 
         .wrap {
@@ -99,9 +99,9 @@ export class SwIndexScreen extends SwitchComponent {
           justify-content: center;
           width: 140px;
           height: 140px;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
           border-radius: 40px;
-          box-shadow: 0 25px 50px rgba(0, 145, 255, 0.35);
+          box-shadow: 0 25px 50px rgba(79, 70, 229, 0.35);
           animation: float 3s ease-in-out infinite;
         }
 
@@ -115,12 +115,13 @@ export class SwIndexScreen extends SwitchComponent {
         }
 
         .logo {
-          width: 80px;
-          height: 80px;
-          filter: brightness(0) invert(1);
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
         }
 
         .title {
+          font-family: 'Montserrat', sans-serif;
           font-weight: 700;
           color: var(--main_text, #000);
           font-size: 42px;
