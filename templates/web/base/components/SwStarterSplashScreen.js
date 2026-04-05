@@ -1,4 +1,5 @@
 import { SwitchComponent } from 'switch-framework';
+import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/theme';
 
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
@@ -9,17 +10,24 @@ export class SwStarterSplashScreen extends SwitchComponent {
   }
 
   setupThemeListener() {
-    const handleThemeChange = () => this.updateLogo();
-    document.addEventListener('theme:change', handleThemeChange);
-    this.addOnDestroy(() => {
-      document.removeEventListener('theme:change', handleThemeChange);
-    });
+    useThemesChangesSubscriber((theme)=>{
+      this.updateLogo(theme);
+    })
   }
 
-  updateLogo() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
-                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches &&
-                    !document.documentElement.getAttribute('data-theme'));
+  updateLogo(theme) {
+    const isDark = theme === 'dark';
+    const logoImg = this.select('.logo');
+    if (logoImg) {
+      logoImg.src = isDark
+        ? '/assets/files/Switch_framework_logo_white.svg'
+        : '/assets/files/Switch_framework_logo_purple.svg';
+    }
+  }
+
+  updateLogo(theme) {
+
+    const isDark = theme || 'light';
     const logoImg = this.select('.logo');
     if (logoImg) {
       logoImg.src = isDark
@@ -30,17 +38,16 @@ export class SwStarterSplashScreen extends SwitchComponent {
 
   render() {
     return `
-      <div class="wrap">
+       <div class="wrap">
         <div class="card">
           <div class="logo-container">
             <img class="logo" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" />
           </div>
           <div class="title">Switch Framework</div>
-          <div class="sub">Launching...</div>
-        </div>
-        <div class="linear-loader-container">
-          <div class="linear-loader">
-            <div class="linear-loader-bar"></div>
+          <div class="linear-loader-container">
+            <div class="linear-loader">
+              <div class="linear-loader-bar"></div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import { SwitchComponent } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
+import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/theme';
+
 
 export class SwIndexScreen extends SwitchComponent {
   static screenName = 'index';
@@ -8,10 +10,26 @@ export class SwIndexScreen extends SwitchComponent {
   static tag = 'sw-index-screen';
   static layout = 'stack';
 
-  connected() {
-    this.shadowRoot.querySelector('#go_home')?.addEventListener('click', () => {
-      navigate('home');
-    });
+  onMount() {
+    this.updateLogo();
+    this.setupThemeListener();
+    this.listener('#go_home', 'click', () => navigate('home'));
+  }
+
+  setupThemeListener() {
+    useThemesChangesSubscriber((theme)=>{
+      this.updateLogo(theme);
+    })
+  }
+
+  updateLogo(theme) {
+    const isDark = theme === 'dark';
+    const logoImg = this.select('.logo');
+    if (logoImg) {
+      logoImg.src = isDark
+        ? '/assets/files/Switch_framework_logo_white.svg'
+        : '/assets/files/Switch_framework_logo_round_purple.svg';
+    }
   }
 
   render() {
