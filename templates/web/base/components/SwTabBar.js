@@ -4,21 +4,21 @@ import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-fram
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
 
-  connected() {
+  onMount(){
     this.updateActive();
     this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
-    this.shadowRoot.addEventListener('click', (e) => {
+    this.listener(':host','click', (e) => {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
       navigate(route);
+
     });
+    this.addOnDestroy(this._unsub());
   }
 
-  disconnected() {
-    if (this._unsub) this._unsub();
-  }
+
 
   getTabs() {
     const layout = globalStates?.getState ? globalStates.getState('tabsLayout') : null;
@@ -74,7 +74,7 @@ export class SwTabBar extends SwitchComponent {
         :host {
           display: block;
           width: 100%;
-          background: transparent;
+          background: var(--page_background);
         }
 
         * {
@@ -88,7 +88,7 @@ export class SwTabBar extends SwitchComponent {
           gap: 12px;
           padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
           border-top: 1px solid var(--border_color, #e5e5e5);
-          background: rgba(255, 255, 255, 0.95);
+          background: var(--page_background);
           backdrop-filter: saturate(180%) blur(10px);
         }
 

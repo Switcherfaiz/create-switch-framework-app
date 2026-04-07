@@ -1,36 +1,20 @@
 import { SwitchComponent } from 'switch-framework';
-import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/theme';
+import { getSystemTheme} from 'switch-framework/themes';
 
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
 
   onMount() {
     this.updateLogo();
-    this.setupThemeListener();
   }
 
-  setupThemeListener() {
-    useThemesChangesSubscriber((theme)=>{
-      this.updateLogo(theme);
-    })
-  }
 
-  updateLogo(theme) {
-    const isDark = theme === 'dark';
+  updateLogo() {
+
+    const isDark = getSystemTheme() || 'light';
     const logoImg = this.select('.logo');
     if (logoImg) {
-      logoImg.src = isDark
-        ? '/assets/files/Switch_framework_logo_white.svg'
-        : '/assets/files/Switch_framework_logo_purple.svg';
-    }
-  }
-
-  updateLogo(theme) {
-
-    const isDark = theme || 'light';
-    const logoImg = this.select('.logo');
-    if (logoImg) {
-      logoImg.src = isDark
+      logoImg.src = isDark=="dark"
         ? '/assets/files/Switch_framework_logo_white.svg'
         : '/assets/files/Switch_framework_logo_purple.svg';
     }

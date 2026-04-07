@@ -7,6 +7,8 @@ export class SwHomeScreen extends SwitchComponent {
   static tag = 'sw-home-screen';
   static layout = 'tabs';
 
+
+
   render() {
     return `
       <div class="wrap">
@@ -14,7 +16,7 @@ export class SwHomeScreen extends SwitchComponent {
         
         <div class="hero">
           <div class="logo-container">
-            <img class="logo" src="/assets/logo.svg" alt="Switch Framework" />
+            <img class="logo" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" />
           </div>
           <div class="title">Tabs View</div>
         </div>
@@ -27,15 +29,15 @@ export class SwHomeScreen extends SwitchComponent {
           <div class="card">
             <div class="row">
               <div class="l">Try editing</div>
-              <div class="r">src/app/(tabs)/index.js</div>
+              <div class="r">/app/(tabs)/index.js</div>
             </div>
             <div class="row">
               <div class="l">Dev tools</div>
-              <div class="r">cmd+d</div>
+              <div class="r">F12</div>
             </div>
             <div class="row">
-              <div class="l">Fresh start</div>
-              <div class="r">npm reset project</div>
+              <div class="l">Components</div>
+              <div class="r">/components</div>
             </div>
           </div>
         </div>
@@ -50,10 +52,10 @@ export class SwHomeScreen extends SwitchComponent {
       <style>
         :host {
           display: block;
+          width: 100%;
           padding: 0;
-          font-family: 'Montserrat', sans-serif;
-          height: 100%;
-          background: var(--bg, #fff);
+          font-family: var(--font);
+          background: var(--page_background);
         }
 
         * {
@@ -89,7 +91,7 @@ export class SwHomeScreen extends SwitchComponent {
           justify-content: center;
           width: 120px;
           height: 120px;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
+          background: linear-gradient(135deg, var(--main_color) 0%, #0073e6 100%);
           border-radius: 32px;
           box-shadow: 0 20px 40px rgba(0, 145, 255, 0.3);
         }
@@ -133,7 +135,7 @@ export class SwHomeScreen extends SwitchComponent {
 
         .card {
           width: 100%;
-          background: #f5f5f5;
+          background: var(--surface_3);
           border-radius: 20px;
           padding: 8px;
           display: flex;

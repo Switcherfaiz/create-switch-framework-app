@@ -1,28 +1,20 @@
 import { SwitchComponent } from 'switch-framework';
+import { getSystemTheme} from 'switch-framework/themes';
 
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
 
   onMount() {
     this.updateLogo();
-    this.setupThemeListener();
   }
 
-  setupThemeListener() {
-    const handleThemeChange = () => this.updateLogo();
-    document.addEventListener('theme:change', handleThemeChange);
-    this.addOnDestroy(() => {
-      document.removeEventListener('theme:change', handleThemeChange);
-    });
-  }
 
   updateLogo() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
-                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches &&
-                    !document.documentElement.getAttribute('data-theme'));
+
+    const isDark = getSystemTheme() || 'light';
     const logoImg = this.select('.logo');
     if (logoImg) {
-      logoImg.src = isDark
+      logoImg.src = isDark=="dark"
         ? '/assets/files/Switch_framework_logo_white.svg'
         : '/assets/files/Switch_framework_logo_purple.svg';
     }
@@ -30,17 +22,16 @@ export class SwStarterSplashScreen extends SwitchComponent {
 
   render() {
     return `
-      <div class="wrap">
+       <div class="wrap">
         <div class="card">
           <div class="logo-container">
             <img class="logo" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" />
           </div>
           <div class="title">Switch Framework</div>
-          <div class="sub">Launching...</div>
-        </div>
-        <div class="linear-loader-container">
-          <div class="linear-loader">
-            <div class="linear-loader-bar"></div>
+          <div class="linear-loader-container">
+            <div class="linear-loader">
+              <div class="linear-loader-bar"></div>
+            </div>
           </div>
         </div>
       </div>

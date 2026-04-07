@@ -4,25 +4,21 @@ import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-fram
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
 
-  onMount() {
+  onMount(){
     this.updateActive();
-    if (!this._unsub) this._unsub = useRouteChangesSubscriber(() => this.updateActive());
+    this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
-    // Delegated click handler; safe to call on every render.
-    this.listener('button[data-route]', 'click', (e) => {
+    this.listener(':host','click', (e) => {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
-      if (route) navigate(route);
+      navigate(route);
+
     });
+    this.addOnDestroy(this._unsub());
   }
 
-  onDestroy() {
-    if (this._unsub) {
-      this._unsub();
-      this._unsub = null;
-    }
-  }
+
 
   getTabs() {
     const layout = globalStates?.getState ? globalStates.getState('tabsLayout') : null;
@@ -78,7 +74,7 @@ export class SwTabBar extends SwitchComponent {
         :host {
           display: block;
           width: 100%;
-          background: transparent;
+          background: var(--page_background);
         }
 
         * {
@@ -92,7 +88,7 @@ export class SwTabBar extends SwitchComponent {
           gap: 12px;
           padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
           border-top: 1px solid var(--border_color, #e5e5e5);
-          background: rgba(255, 255, 255, 0.95);
+          background: var(--page_background);
           backdrop-filter: saturate(180%) blur(10px);
         }
 

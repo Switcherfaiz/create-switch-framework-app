@@ -1,10 +1,11 @@
 require('dotenv').config();
 
+const path = require('node:path');
 const switchFrameworkBackend = require('switch-framework-backend');
 
 switchFrameworkBackend.config({
-  PORT: process.env.PORT ? Number(process.env.PORT) : 3000,
-  staticRoot: __dirname,
+  PORT: process.env.PORT ? Number(process.env.PORT) : 8000,
+  staticRoot: path.join(__dirname, '.'),
   session: {
     secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,

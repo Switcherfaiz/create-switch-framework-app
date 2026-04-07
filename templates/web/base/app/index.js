@@ -1,6 +1,6 @@
 import { SwitchComponent } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
-import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/theme';
+import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/themes';
 
 
 export class SwIndexScreen extends SwitchComponent {
@@ -17,18 +17,22 @@ export class SwIndexScreen extends SwitchComponent {
   }
 
   setupThemeListener() {
+    console.log('added');
+    
     useThemesChangesSubscriber((theme)=>{
+      console.log('changed',theme);
+      
       this.updateLogo(theme);
     })
   }
 
   updateLogo(theme) {
-    const isDark = theme === 'dark';
+    const themeMode=theme?theme:getSystemTheme?getSystemTheme:getTheme?getTheme:"light";
     const logoImg = this.select('.logo');
     if (logoImg) {
-      logoImg.src = isDark
+      logoImg.src = themeMode=="dark"
         ? '/assets/files/Switch_framework_logo_white.svg'
-        : '/assets/files/Switch_framework_logo_round_purple.svg';
+        : '/assets/files/Switch_framework_logo_purple.svg';
     }
   }
 
@@ -52,15 +56,15 @@ export class SwIndexScreen extends SwitchComponent {
           <div class="card">
             <div class="row">
               <div class="l">Try editing</div>
-              <div class="r">src/app/index.js</div>
+              <div class="r">/app/index.js</div>
             </div>
             <div class="row">
               <div class="l">Dev tools</div>
-              <div class="r">cmd+d</div>
+              <div class="r">F12</div>
             </div>
             <div class="row">
-              <div class="l">Fresh start</div>
-              <div class="r">npm reset project</div>
+              <div class="l">Components</div>
+              <div class="r">/components</div>
             </div>
           </div>
         </div>
@@ -80,13 +84,13 @@ export class SwIndexScreen extends SwitchComponent {
           width: 100%;
           height: 100vh;
           padding: 0;
-          font-family: 'Montserrat', sans-serif;
-          background: var(--bg, #fff);
+          font-family: var(--font);
+          background: var(--page_background);
         }
 
         * {
           box-sizing: border-box;
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font);
         }
 
         .wrap {
@@ -117,9 +121,7 @@ export class SwIndexScreen extends SwitchComponent {
           justify-content: center;
           width: 140px;
           height: 140px;
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
           border-radius: 40px;
-          box-shadow: 0 25px 50px rgba(79, 70, 229, 0.35);
           animation: float 3s ease-in-out infinite;
         }
 
@@ -171,7 +173,7 @@ export class SwIndexScreen extends SwitchComponent {
 
         .card {
           width: 100%;
-          background: #f5f5f5;
+          background: var(--surface_3);
           border-radius: 20px;
           padding: 8px;
           display: flex;
@@ -216,7 +218,7 @@ export class SwIndexScreen extends SwitchComponent {
         .r {
           font-weight: 500;
           color: var(--sub_text, #666);
-          background: rgba(0, 0, 0, 0.05);
+          background: var(--surface_2);
           padding: 6px 12px;
           border-radius: 999px;
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
@@ -234,7 +236,7 @@ export class SwIndexScreen extends SwitchComponent {
           padding: 14px 20px;
           margin-top: 20px;
           margin-bottom: 0;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
+          background: linear-gradient(135deg, var(--main_color) 0%, var(--main_color) 100%);
           color: white;
           border: none;
           border-radius: 18px;
@@ -242,7 +244,6 @@ export class SwIndexScreen extends SwitchComponent {
           font-size: 14px;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 8px 20px rgba(0, 145, 255, 0.25);
         }
 
         .btn-primary:active {

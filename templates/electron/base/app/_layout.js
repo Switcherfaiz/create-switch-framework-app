@@ -25,6 +25,26 @@ export class SwStackLayout extends StackLayout {
 
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }
+
+  // Called by app-shell to inject markup directly into its shadow DOM.
+  // Wrap popup components in <div class="popups" data-popups> — they get
+  // hoisted to #app-popups automatically. Everything else goes to #layout-content.
+  static render() {
+    return `
+      <div class="popups" data-popups>
+        <h1>Bichwa</h1>
+      </div>
+    `;
+  }
+
+  // Called by app-shell to inject styles directly into its shadow DOM.
+  static styleSheet() {
+    return `
+      <style>
+        h1 { font-size: 30px; }
+      </style>
+    `;
+  }
 }
 
 export default SwStackLayout.getAppLayout();

@@ -1,6 +1,6 @@
 {
   "name": "create-switch-framework-app",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Create a Switch Framework app",
   "github": "https://github.com/Switcherfaiz/create-switch-framework-app",
   "author":"Switcherfaiz",
@@ -12,7 +12,10 @@
     "cli",
     "scaffold",
     "create-app",
-    "switch-framework"
+    "switch-framework",
+    "create-switch-framework-app",
+    "switch-framework-backend",
+    "javascript new framework"
   ],
   "files": [
     "bin",

@@ -1,5 +1,5 @@
 import { SwitchComponent } from 'switch-framework';
-import { navigate, goBack, getActivePath } from 'switch-framework/router';
+import { navigate, goBack } from 'switch-framework/router';
 
 export class SwUserNotFoundScreen extends SwitchComponent {
   static screenName = '+not-found';
@@ -8,14 +8,28 @@ export class SwUserNotFoundScreen extends SwitchComponent {
   static tag = 'sw-user-not-found-screen';
   static layout = 'stack';
 
-  onMount() {
-    this.listener('#home', 'click', () => navigate('home'));
-    this.listener('#back', 'click', () => goBack());
+  static get observedAttributes() {
+    return ['path'];
+  }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name === 'path' && oldVal !== newVal) {
+      this._renderToShadow();
+    }
+  }
+
+  connected() {
+    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
+      navigate('home');
+    });
+
+    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
+      goBack();
+    });
   }
 
   render() {
-    const path = getActivePath() ;
-    const safePath = this._escapeHtml(path);
+    const path = this.getAttribute('path') || (typeof window !== 'undefined' ? window.location.pathname : '') || '';
 
     return `
       <div class="wrap">
@@ -23,7 +37,7 @@ export class SwUserNotFoundScreen extends SwitchComponent {
           <div class="code">404</div>
           <div class="h">This screen does not exist</div>
           <div class="p">No screen is registered for:</div>
-          <div class="path">${safePath}</div>
+          <div class="path">${path}</div>
 
           <div class="row">
             <button class="btn" id="home">Go to Home</button>
@@ -32,15 +46,6 @@ export class SwUserNotFoundScreen extends SwitchComponent {
         </div>
       </div>
     `;
-  }
-
-  _escapeHtml(value = '') {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
   }
 
   styleSheet() {
