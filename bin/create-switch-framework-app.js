@@ -244,7 +244,7 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
   // When --use-local is set, we intentionally do NOT add switch-framework deps to package.json
   // to avoid npm registry fetching during testing. We will npm link them instead.
   if (!useLocal) {
-    deps['switch-framework'] = '^0.2.4';
+    deps['switch-framework'] = '^0.2.5';
     deps['switch-framework-backend'] = '^0.2.0';
   }
 
