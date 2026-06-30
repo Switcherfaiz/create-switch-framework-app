@@ -31,9 +31,7 @@ export class SwStackLayout extends StackLayout {
   // hoisted to #app-popups automatically. Everything else goes to #layout-content.
   static render() {
     return `
-      <div class="popups" data-popups>
-        <h1>Bichwa</h1>
-      </div>
+
     `;
   }
 
