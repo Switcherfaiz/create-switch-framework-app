@@ -1,7 +1,5 @@
 # create-switch-framework-app
 
-Status: Under maintenance. Documentation is not ready yet.
-
 create-switch-framework-app is a CLI for initializing apps that use Switch Framework tools.
 
 It can scaffold projects for:

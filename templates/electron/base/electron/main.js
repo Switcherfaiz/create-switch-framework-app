@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 const { app, BrowserWindow } = require('electron');
 const path = require('node:path');
-
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const pkg = require('../package.json');
+const port = Number(process.env.PORT) || pkg.switchFramework?.port;
 let mainWindow;
 
 function createWindow() {
