@@ -14,17 +14,15 @@ switchFrameworkBackend.config({
   }
 });
 
+const { createApiRouter } = require('./routes/api.js');
+
 const app = switchFrameworkBackend();
 
-app.initServer();
+app.initServer((server) => {
+  server.use('/api', createApiRouter());
 
-
-
-// app.initServer((server) => {
-//   //when u want to pass your middlewares
-//   // server.use('/api', createApiRouter({ ... }));
-//   // server.use(switchFrameworkBackend.checkRestrict(restrictConfig));
-// });
+  // server.use(switchFrameworkBackend.checkRestrict(restrictConfig));
+});
 
 // const restrictConfig = {
 //   public: ['/', '/login'],

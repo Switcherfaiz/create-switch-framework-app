@@ -154,6 +154,7 @@ function portResolutionLines({ pkgRequirePath = './package.json' } = {}) {
 
 function serverJsTemplate({ appType }) {
   const staticRoot = appType === 'both' ? 'web' : '.';
+  const apiRouterPath = appType === 'both' ? './web/routes/api.js' : './routes/api.js';
 
   return `require('dotenv').config();\n\n` +
     `const path = require('node:path');\n` +
@@ -168,8 +169,10 @@ function serverJsTemplate({ appType }) {
     `    saveUninitialized: false\n` +
     `  }\n` +
     `});\n\n` +
+    `const { createApiRouter } = require('${apiRouterPath}');\n\n` +
     `const app = switchFrameworkBackend();\n\n` +
     `app.initServer((server) => {\n` +
+    `  server.use('/api', createApiRouter());\n\n` +
     `  const restrictConfig = {\n` +
     `    public: ['/', '/login'],\n` +
     `    rules: [\n` +
@@ -233,7 +236,7 @@ function electronBuilderTemplate({ packageName }) {
   ) + '\n';
 }
 
-function createPackageJson({ packageName, appType, port, useLocal }) {
+function createPackageJson({ packageName, appType, port, useLocal, scaffoldVersion }) {
   const scripts = {
     dev: 'node server.js',
     start: 'node server.js'
@@ -252,7 +255,7 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
   // When --use-local is set, we intentionally do NOT add switch-framework deps to package.json
   // to avoid npm registry fetching during testing. We will npm link them instead.
   if (!useLocal) {
-    deps['switch-framework'] = '^0.2.5';
+    deps['switch-framework'] = '^0.2.6';
     deps['switch-framework-backend'] = '^0.2.0';
   }
 
@@ -268,8 +271,7 @@ function createPackageJson({ packageName, appType, port, useLocal }) {
     pkg.main = 'main.js';
   }
 
-  // Keep port discoverable
-  pkg.switchFramework = { port };
+  pkg.switchFramework = { port, scaffoldVersion };
 
   return JSON.stringify(pkg, null, 2) + '\n';
 }
@@ -446,7 +448,7 @@ async function main() {
 
     await fs.writeFile(
       path.join(targetDir, 'package.json'),
-      createPackageJson({ packageName, appType, port, useLocal }),
+      createPackageJson({ packageName, appType, port, useLocal, scaffoldVersion: cliVersion }),
       'utf8'
     );
 
@@ -458,7 +460,7 @@ async function main() {
         await runNpmInstall({ cwd: targetDir });
         if (!useLocal) {
           spinner.start('Ensuring switch-framework packages...');
-          await runNpmInstall({ cwd: targetDir, packages: ['switch-framework', 'switch-framework-backend'] });
+          await runNpmInstall({ cwd: targetDir, packages: ['switch-framework@^0.2.6', 'switch-framework-backend'] });
         }
         if (appType === 'electron' || appType === 'both') {
           spinner.start('Installing Electron tooling (npm install electron electron-builder --save-dev)...');
