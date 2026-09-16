@@ -147,93 +147,19 @@ async function askQuestions({ projectName, yes, noInstall, appTypeOverride, port
   };
 }
 
-function portResolutionLines({ pkgRequirePath = './package.json' } = {}) {
-  return `const pkg = require('${pkgRequirePath}');\n` +
-    `const port = Number(process.env.PORT) || pkg.switchFramework?.port;\n\n`;
-}
+async function copyElectronShell({ electronBase, targetDir, packageName }) {
+  await fs.copy(path.join(electronBase, 'electron'), path.join(targetDir, 'electron'), { overwrite: true });
+  await fs.copy(path.join(electronBase, 'constants'), path.join(targetDir, 'constants'), { overwrite: true });
+  await fs.ensureDir(path.join(targetDir, 'server'));
+  await fs.copy(path.join(electronBase, 'server', 'local-auth.js'), path.join(targetDir, 'server', 'local-auth.js'));
+  await fs.copy(path.join(electronBase, 'main.js'), path.join(targetDir, 'main.js'));
+  await fs.copy(path.join(electronBase, 'preload.js'), path.join(targetDir, 'preload.js'));
 
-function serverJsTemplate({ appType }) {
-  const staticRoot = appType === 'both' ? 'web' : '.';
-  const apiRouterPath = appType === 'both' ? './web/routes/api.js' : './routes/api.js';
-
-  return `require('dotenv').config();\n\n` +
-    `const path = require('node:path');\n` +
-    `const switchFrameworkBackend = require('switch-framework-backend');\n` +
-    portResolutionLines() +
-    `switchFrameworkBackend.config({\n` +
-    `  PORT: port,\n` +
-    `  staticRoot: path.join(__dirname, '${staticRoot}'),\n` +
-    `  session: {\n` +
-    `    secret: process.env.SESSION_SECRET || 'dev-secret',\n` +
-    `    resave: false,\n` +
-    `    saveUninitialized: false\n` +
-    `  }\n` +
-    `});\n\n` +
-    `const { createApiRouter } = require('${apiRouterPath}');\n\n` +
-    `const app = switchFrameworkBackend();\n\n` +
-    `app.initServer((server) => {\n` +
-    `  server.use('/api', createApiRouter());\n\n` +
-    `  const restrictConfig = {\n` +
-    `    public: ['/', '/login'],\n` +
-    `    rules: [\n` +
-    `      { prefix: '/admin', roles: ['admin'] },\n` +
-    `      { prefix: '/billing', roles: ['billing', 'admin'] },\n` +
-    `      { path: '/login', roles: ['*'] }\n` +
-    `    ]\n` +
-    `  };\n` +
-    `  server.use(switchFrameworkBackend.checkRestrict(restrictConfig));\n` +
-    `});\n`;
-}
-
-function electronMainTemplate() {
-  return `require('dotenv').config();\n\n` +
-    `const { app, BrowserWindow } = require('electron');\n` +
-    `const path = require('node:path');\n` +
-    portResolutionLines({ pkgRequirePath: '../package.json' }) +
-    `let mainWindow;\n\n` +
-    `function createWindow() {\n` +
-    `  mainWindow = new BrowserWindow({\n` +
-    `    width: 1200,\n` +
-    `    height: 800,\n` +
-    `    webPreferences: {\n` +
-    `      preload: path.join(__dirname, 'preload.js')\n` +
-    `    }\n` +
-    `  });\n\n` +
-    `  mainWindow.loadURL(\`http://localhost:\${port}\`);\n` +
-    `}\n\n` +
-    `app.whenReady().then(() => {\n` +
-    `  require('../server.js');\n` +
-    `  setTimeout(createWindow, 350);\n` +
-    `  app.on('activate', () => {\n` +
-    `    if (BrowserWindow.getAllWindows().length === 0) createWindow();\n` +
-    `  });\n` +
-    `});\n\n` +
-    `app.on('window-all-closed', () => {\n` +
-    `  if (process.platform !== 'darwin') app.quit();\n` +
-    `});\n`;
-}
-
-function electronPreloadTemplate() {
-  return `const { contextBridge } = require('electron');\n\n` +
-    `contextBridge.exposeInMainWorld('switchApp', {\n` +
-    `  ping: () => 'pong'\n` +
-    `});\n`;
-}
-
-function electronBuilderTemplate({ packageName }) {
-  return JSON.stringify(
-    {
-      appId: `com.switchframework.${packageName}`,
-      productName: packageName,
-      directories: { output: 'dist' },
-      files: ['**/*'],
-      win: { target: 'nsis' },
-      mac: { target: 'dmg' },
-      linux: { target: 'AppImage' }
-    },
-    null,
-    2
-  ) + '\n';
+  const builderPath = path.join(targetDir, 'electron', 'electron-builder.json');
+  const builder = JSON.parse(await fs.readFile(builderPath, 'utf8'));
+  builder.appId = `com.switchframework.${packageName}`;
+  builder.productName = packageName;
+  await fs.writeFile(builderPath, JSON.stringify(builder, null, 2) + '\n', 'utf8');
 }
 
 function createPackageJson({ packageName, appType, port, useLocal, scaffoldVersion }) {
@@ -244,19 +170,16 @@ function createPackageJson({ packageName, appType, port, useLocal, scaffoldVersi
 
   if (appType === 'electron' || appType === 'both') {
     scripts['electron:dev'] = 'electron .';
+    scripts.build = 'electron-builder --config electron/electron-builder.json';
   }
 
-  const deps = {
-    dotenv: '^16.4.5',
-    express: '^4.19.2',
-    'express-session': '^1.18.1'
-  };
+  const deps = {};
 
   // When --use-local is set, we intentionally do NOT add switch-framework deps to package.json
   // to avoid npm registry fetching during testing. We will npm link them instead.
   if (!useLocal) {
-    deps['switch-framework'] = '^0.2.6';
-    deps['switch-framework-backend'] = '^0.2.0';
+    deps['switch-framework'] = '^0.2.9';
+    deps['switch-framework-backend'] = '^0.2.9';
   }
 
   const pkg = {
@@ -391,60 +314,27 @@ async function main() {
 
     const packageName = toPackageName(projectName);
 
+    const bothServerTemplate = path.join(templatesRoot, 'both', 'server.js');
+
     if (appType === 'web') {
       await copyDir(webBase, targetDir);
-      await fs.writeFile(path.join(targetDir, 'server.js'), serverJsTemplate({ appType }), 'utf8');
     }
 
     if (appType === 'electron') {
-      const baseDir = (await fs.pathExists(electronBase)) ? electronBase : webBase;
-      await copyDir(baseDir, targetDir);
-      await fs.ensureDir(path.join(targetDir, 'electron'));
-      await fs.writeFile(path.join(targetDir, 'server.js'), serverJsTemplate({ appType }), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'main.js'), electronMainTemplate(), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'preload.js'), electronPreloadTemplate(), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'electron-builder.json'), electronBuilderTemplate({ packageName }), 'utf8');
-
-      // Electron expects entry at project root
-      await fs.writeFile(
-        path.join(targetDir, 'main.js'),
-        "module.exports = require('./electron/main.js');\n",
-        'utf8'
-      );
-      await fs.writeFile(
-        path.join(targetDir, 'preload.js'),
-        "module.exports = require('./electron/preload.js');\n",
-        'utf8'
-      );
+      await copyDir(electronBase, targetDir);
     }
 
     if (appType === 'both') {
       await fs.ensureDir(path.join(targetDir, 'web'));
       await copyDir(webBase, path.join(targetDir, 'web'));
-
-      await fs.ensureDir(path.join(targetDir, 'electron'));
-      await fs.writeFile(path.join(targetDir, 'server.js'), serverJsTemplate({ appType }), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'main.js'), electronMainTemplate(), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'preload.js'), electronPreloadTemplate(), 'utf8');
-      await fs.writeFile(path.join(targetDir, 'electron', 'electron-builder.json'), electronBuilderTemplate({ packageName }), 'utf8');
-
-      await fs.writeFile(
-        path.join(targetDir, 'main.js'),
-        "module.exports = require('./electron/main.js');\n",
-        'utf8'
-      );
-      await fs.writeFile(
-        path.join(targetDir, 'preload.js'),
-        "module.exports = require('./electron/preload.js');\n",
-        'utf8'
-      );
+      await copyElectronShell({ electronBase, targetDir, packageName });
+      await fs.copy(bothServerTemplate, path.join(targetDir, 'server.js'), { overwrite: true });
     }
 
-    await fs.writeFile(
-      path.join(targetDir, '.env.example'),
-      `PORT=${port}\nSESSION_SECRET=dev-secret\n`,
-      'utf8'
-    );
+    const envExample = appType === 'web'
+      ? `PORT=${port}\nSESSION_SECRET=dev-secret\n`
+      : `PORT=${port}\nSESSION_SECRET=dev-secret\n# ALLOW_WEB_VIEWING is set in constants/index.js (not .env)\n`;
+    await fs.writeFile(path.join(targetDir, '.env.example'), envExample, 'utf8');
 
     await fs.writeFile(
       path.join(targetDir, 'package.json'),
@@ -460,7 +350,7 @@ async function main() {
         await runNpmInstall({ cwd: targetDir });
         if (!useLocal) {
           spinner.start('Ensuring switch-framework packages...');
-          await runNpmInstall({ cwd: targetDir, packages: ['switch-framework@^0.2.6', 'switch-framework-backend'] });
+          await runNpmInstall({ cwd: targetDir, packages: ['switch-framework@^0.2.9', 'switch-framework-backend@^0.2.9'] });
         }
         if (appType === 'electron' || appType === 'both') {
           spinner.start('Installing Electron tooling (npm install electron electron-builder --save-dev)...');

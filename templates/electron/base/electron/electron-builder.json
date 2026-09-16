@@ -1,19 +1,35 @@
 {
-  "appId": "com.switchframework.app",
-  "productName": "Switch Framework App",
   "directories": {
     "output": "dist"
   },
+  "extraMetadata": {
+    "main": "main.js"
+  },
   "files": [
-    "**/*"
+    "main.js",
+    "preload.js",
+    "server.js",
+    "package.json",
+    "constants/**/*",
+    "electron/**/*",
+    "server/**/*",
+    "routes/**/*",
+    "components/**/*",
+    "app/**/*",
+    "assets/**/*",
+    "hooks/**/*",
+    "index.html",
+    "index.js",
+    "!dist/**",
+    "!.env",
+    "!.git/**"
   ],
-  "win": {
-    "target": "nsis"
-  },
-  "mac": {
-    "target": "dmg"
-  },
-  "linux": {
-    "target": "AppImage"
+  "asar": true,
+  "win": { "target": "nsis" },
+  "mac": { "target": "dmg" },
+  "linux": { "target": "AppImage" },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
   }
 }

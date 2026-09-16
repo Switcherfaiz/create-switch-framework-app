@@ -1,35 +1,24 @@
-require('dotenv').config();
+'use strict';
 
 const path = require('node:path');
 const switchFrameworkBackend = require('switch-framework-backend');
-const pkg = require('./package.json');
-const port = Number(process.env.PORT) || pkg.switchFramework?.port;
+const { PORT, SESSION_SECRET } = require('./constants/index.js');
+const { localAuthMiddleware } = require('./server/local-auth.js');
+const { createApiRouter } = require('./routes/api.js');
 
 switchFrameworkBackend.config({
-  PORT: port,
+  PORT,
   staticRoot: path.join(__dirname, '.'),
   session: {
-    secret: process.env.SESSION_SECRET || 'dev-secret',
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
-  }
+    saveUninitialized: false,
+  },
 });
-
-const { createApiRouter } = require('./routes/api.js');
 
 const app = switchFrameworkBackend();
 
 app.initServer((server) => {
+  server.use(localAuthMiddleware);
   server.use('/api', createApiRouter());
-
-  // server.use(switchFrameworkBackend.checkRestrict(restrictConfig));
 });
-
-// const restrictConfig = {
-//   public: ['/', '/login'],
-//   rules: [
-//     { prefix: '/admin', roles: ['admin'] },
-//     { prefix: '/billing', roles: ['billing', 'admin'] },
-//     { path: '/login', roles: ['*'] }
-//   ]
-// };
