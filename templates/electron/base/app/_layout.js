@@ -1,11 +1,9 @@
-import { StackLayout, createState, registerComponents } from 'switch-framework';
-import { SwStarterSplashScreen } from '../components/SwStarterSplashScreen.js';
-import { SwTabBar } from '../components/SwTabBar.js';
+import { StackLayout, ensureState } from 'switch-framework';
+import '../components/SwStarterSplashScreen.js';
 import { SwIndexScreen } from './index.js';
 import NotFoundScreen from './+not-found.js';
 import { SwTabsLayout } from './(tabs)/_layout.js';
-
-registerComponents([SwStarterSplashScreen, SwTabBar]);
+import { checkIntro } from '../hooks/checkIntro.js';
 
 export class SwStackLayout extends StackLayout {
   static tag = 'sw-stack-layout';
@@ -14,28 +12,24 @@ export class SwStackLayout extends StackLayout {
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';
 
-  static async init({ globalStates, renderSplashscreen }) {
+  static async init({ renderSplashscreen }) {
     renderSplashscreen('sw-starter-splash');
 
-    // Example: create app-level state
-    createState('example-counter', 0);
+    ensureState('example-counter', 0);
 
-    // Simulate async init (e.g. load config, auth check)
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const intro = await checkIntro();
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    return { splash: 'sw-starter-splash', initialRoute: 'index' };
+    return {
+      splash: 'sw-starter-splash',
+      initialRoute: intro.shouldShowIntro ? 'index' : 'index',
+    };
   }
 
-  // Called by app-shell to inject markup directly into its shadow DOM.
-  // Wrap popup components in <div class="popups" data-popups> — they get
-  // hoisted to #app-popups automatically. Everything else goes to #layout-content.
   static render() {
-    return `
-
-    `;
+    return ``;
   }
 
-  // Called by app-shell to inject styles directly into its shadow DOM.
   static styleSheet() {
     return `
       <style>
@@ -44,5 +38,3 @@ export class SwStackLayout extends StackLayout {
     `;
   }
 }
-
-export default SwStackLayout.getAppLayout();

@@ -56,7 +56,7 @@ export class SwIndexScreen extends SwitchComponent {
           <div class="card">
             <div class="row">
               <div class="l">Try editing</div>
-              <div class="r">/app/index.js</div>
+              <div class="r">/app/_layout.js</div>
             </div>
             <div class="row">
               <div class="l">Dev tools</div>

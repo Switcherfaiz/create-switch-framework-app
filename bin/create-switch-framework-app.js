@@ -182,6 +182,10 @@ function createPackageJson({ packageName, appType, port, useLocal, scaffoldVersi
     deps['switch-framework-backend'] = '^0.2.9';
   }
 
+  if ((appType === 'electron' || appType === 'both') && !useLocal) {
+    deps['switch-framework-electron'] = '^0.2.9';
+  }
+
   const pkg = {
     name: packageName,
     private: true,
@@ -364,14 +368,18 @@ async function main() {
     }
 
     if (useLocal) {
-      spinner.start('Linking local packages (npm link switch-framework switch-framework-backend)...');
+      const linkPackages = ['switch-framework', 'switch-framework-backend'];
+      if (appType === 'electron' || appType === 'both') {
+        linkPackages.push('switch-framework-electron');
+      }
+      spinner.start(`Linking local packages (npm link ${linkPackages.join(' ')})...`);
       try {
-        await runNpmLink({ cwd: targetDir, packages: ['switch-framework', 'switch-framework-backend'] });
+        await runNpmLink({ cwd: targetDir, packages: linkPackages });
         spinner.succeed('Local packages linked');
       } catch (e) {
         spinner.warn('npm link failed');
         console.error(chalk.yellow(e?.message || String(e)));
-        console.log(chalk.yellow('Make sure you ran npm link inside your switch-framework and switch-framework-backend packages first.'));
+        console.log(chalk.yellow('Make sure you ran npm link inside switch-framework, switch-framework-backend, and (for Electron) switch-framework-electron first.'));
       }
     }
 
@@ -390,7 +398,10 @@ async function main() {
     }
 
     if (useLocal) {
-      console.log('  ' + chalk.cyan('npm link switch-framework switch-framework-backend'));
+      const linkHint = (appType === 'electron' || appType === 'both')
+        ? 'npm link switch-framework switch-framework-backend switch-framework-electron'
+        : 'npm link switch-framework switch-framework-backend';
+      console.log('  ' + chalk.cyan(linkHint));
     }
 
     if (appType === 'web') {

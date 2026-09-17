@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+import { SwitchComponent, registerComponent } from 'switch-framework';
 import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
 
 export class SwTabBar extends SwitchComponent {
@@ -144,3 +144,5 @@ export class SwTabBar extends SwitchComponent {
     `;
   }
 }
+
+registerComponent(SwTabBar);

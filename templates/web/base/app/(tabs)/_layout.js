@@ -1,9 +1,7 @@
-import { TabLayout, registerComponents } from 'switch-framework';
-import { SwTabBar } from '../../components/SwTabBar.js';
+import { TabLayout } from 'switch-framework';
+import '../../components/SwTabBar.js';
 import { SwHomeScreen } from './index.js';
 import { SwExploreScreen } from './explore.js';
-
-registerComponents([SwTabBar]);
 
 export class SwTabsLayout extends TabLayout {
   static tag = 'sw-tabs-layout';
@@ -30,6 +28,10 @@ export class SwTabsLayout extends TabLayout {
   ];
   static options = { position: 'bottom' };
   static screens = [SwHomeScreen, SwExploreScreen];
+
+  getContentContainer() {
+    return this.shadowRoot?.querySelector('.tabcontainer') ?? null;
+  }
 
   render() {
     return `
@@ -85,5 +87,3 @@ export class SwTabsLayout extends TabLayout {
     `;
   }
 }
-
-export default SwTabsLayout;

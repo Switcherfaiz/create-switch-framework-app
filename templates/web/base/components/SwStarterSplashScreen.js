@@ -1,20 +1,56 @@
-import { SwitchComponent } from 'switch-framework';
-import { getSystemTheme} from 'switch-framework/themes';
+import { SwitchComponent, registerComponent } from 'switch-framework';
+import { VERSION as frameworkVersion } from 'switch-framework';
+import { getSystemTheme } from 'switch-framework/themes';
 
 export class SwStarterSplashScreen extends SwitchComponent {
   static tag = 'sw-starter-splash';
 
   onMount() {
     this.updateLogo();
+    this.loadVersions();
   }
 
+  async loadVersions() {
+    const el = this.select('.sub');
+    if (!el) return;
+
+    let backend = '';
+    let electron = '';
+    let cli = '';
+
+    try {
+      const mod = await import('switch-framework-backend');
+      backend = mod.default?.VERSION || mod.VERSION || '';
+    } catch (_) {}
+
+    try {
+      const mod = await import('switch-framework-electron');
+      electron = mod.VERSION || '';
+    } catch (_) {}
+
+    try {
+      const res = await fetch('/package.json');
+      if (res.ok) {
+        const pkg = await res.json();
+        cli = pkg?.switchFramework?.scaffoldVersion || '';
+      }
+    } catch (_) {}
+
+    const parts = [
+      frameworkVersion && `framework ${frameworkVersion}`,
+      backend && `backend ${backend}`,
+      cli && `cli ${cli}`,
+      electron && `electron ${electron}`,
+    ].filter(Boolean);
+
+    if (parts.length) el.textContent = parts.join(' · ');
+  }
 
   updateLogo() {
-
     const isDark = getSystemTheme() || 'light';
     const logoImg = this.select('.logo');
     if (logoImg) {
-      logoImg.src = isDark=="dark"
+      logoImg.src = isDark === 'dark'
         ? '/assets/files/Switch_framework_logo_white.svg'
         : '/assets/files/Switch_framework_logo_purple.svg';
     }
@@ -28,6 +64,7 @@ export class SwStarterSplashScreen extends SwitchComponent {
             <img class="logo" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" />
           </div>
           <div class="title">Switch Framework</div>
+          <div class="sub"></div>
           <div class="linear-loader-container">
             <div class="linear-loader">
               <div class="linear-loader-bar"></div>
@@ -129,46 +166,28 @@ export class SwStarterSplashScreen extends SwitchComponent {
         }
 
         @keyframes rotateLogo {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         @keyframes linearProgress {
-          0% {
-            transform: translateX(-100%);
-          }
-          50% {
-            transform: translateX(75%);
-          }
-          100% {
-            transform: translateX(250%);
-          }
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(75%); }
+          100% { transform: translateX(250%); }
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
         }
       </style>
     `;
   }
 }
+
+registerComponent(SwStarterSplashScreen);
