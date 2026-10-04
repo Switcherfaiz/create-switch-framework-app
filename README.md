@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Switcherfaiz/create-switch-framework-app/master/logo.svg" alt="Switch Framework" width="180" />
+</p>
+
 # create-switch-framework-app
 
 create-switch-framework-app is a CLI for initializing apps that use Switch Framework tools.
