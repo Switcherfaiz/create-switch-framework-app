@@ -13,6 +13,14 @@ It can scaffold projects for:
 npx create-switch-framework-app my-app
 ```
 
+The CLI asks whether to install `switch-framework-doctor`. After that:
+
+```bash
+npx switch-framework-doctor
+```
+
+Use `--doctor` or `--no-doctor` to skip the prompt.
+
 Or install globally:
 
 ```bash
