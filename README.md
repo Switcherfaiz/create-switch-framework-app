@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Switcherfaiz/create-switch-framework-app/master/logo.svg" alt="Switch Framework" width="180" />
+</p>
+
 # create-switch-framework-app
 
 create-switch-framework-app is a CLI for initializing apps that use Switch Framework tools.
@@ -12,6 +16,14 @@ It can scaffold projects for:
 ```bash
 npx create-switch-framework-app my-app
 ```
+
+The CLI asks whether to install `switch-framework-doctor`. After that:
+
+```bash
+npx switch-framework-doctor
+```
+
+Use `--doctor` or `--no-doctor` to skip the prompt.
 
 Or install globally:
 

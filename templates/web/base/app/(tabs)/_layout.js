@@ -1,4 +1,4 @@
-import { TabLayout } from 'switch-framework';
+import { TabLayout } from 'switch-framework-router';
 import '../../components/SwTabBar.js';
 import { SwHomeScreen } from './index.js';
 import { SwExploreScreen } from './explore.js';

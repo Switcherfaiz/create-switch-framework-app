@@ -35,6 +35,10 @@ function createApiRouter() {
     res.json({
       switchFramework: readPackageVersion('switch-framework'),
       switchFrameworkBackend: readPackageVersion('switch-framework-backend'),
+      switchFrameworkRouter: readPackageVersion('switch-framework-router'),
+      switchFrameworkIcons: readPackageVersion('switch-framework-icons'),
+      switchFrameworkElectron: readPackageVersion('switch-framework-electron'),
+      switchFrameworkDoctor: readPackageVersion('switch-framework-doctor'),
       createSwitchFrameworkApp
     });
   });

@@ -1,7 +1,7 @@
 import { SwitchComponent } from 'switch-framework';
-import { navigate } from 'switch-framework/router';
-import { getSystemTheme, getTheme,useThemesChangesSubscriber } from 'switch-framework/themes';
-
+import { navigate } from 'switch-framework-router';
+import { getSystemTheme, getTheme, useThemesChangesSubscriber } from 'switch-framework/themes';
+import 'switch-framework-icons';
 
 export class SwIndexScreen extends SwitchComponent {
   static screenName = 'index';
@@ -12,66 +12,74 @@ export class SwIndexScreen extends SwitchComponent {
 
   onMount() {
     this.updateLogo();
-    this.setupThemeListener();
+    this.addOnDestroy(useThemesChangesSubscriber((theme) => this.updateLogo(theme)));
     this.listener('#go_home', 'click', () => navigate('home'));
   }
 
-  setupThemeListener() {
-    console.log('added');
-    
-    useThemesChangesSubscriber((theme)=>{
-      console.log('changed',theme);
-      
-      this.updateLogo(theme);
-    })
+  currentTheme(theme) {
+    if (theme) return theme;
+    if (typeof getTheme === 'function') {
+      const t = getTheme();
+      if (t) return t;
+    }
+    if (typeof getSystemTheme === 'function') {
+      const t = getSystemTheme();
+      if (t) return t;
+    }
+    return 'light';
   }
 
   updateLogo(theme) {
-    const themeMode=theme?theme:getSystemTheme?getSystemTheme:getTheme?getTheme:"light";
     const logoImg = this.select('.logo');
-    if (logoImg) {
-      logoImg.src = themeMode=="dark"
-        ? '/assets/files/Switch_framework_logo_white.svg'
-        : '/assets/files/Switch_framework_logo_purple.svg';
-    }
+    if (!logoImg) return;
+    logoImg.src = this.currentTheme(theme) === 'dark'
+      ? '/assets/files/Switch_framework_logo_white.svg'
+      : '/assets/files/Switch_framework_logo_purple.svg';
   }
 
   render() {
     return `
       <div class="wrap">
-        <div class="spacer-top"></div>
-
         <div class="hero">
           <div class="logo-container">
             <img class="logo" src="/assets/files/Switch_framework_logo_round_purple.svg" alt="Switch Framework" />
           </div>
-          <div class="title">Introducing<br>Switch Framework</div>
+          <h1 class="title">Switch Framework</h1>
+          <p class="lede">No-build ESM. Layouts, icons, and navigation are already wired for 0.3.0.</p>
         </div>
 
-        <div class="spacer-middle"></div>
-
-        <div class="section">
-          <div class="label">GET STARTED</div>
-          
-          <div class="card">
-            <div class="row">
-              <div class="l">Try editing</div>
-              <div class="r">/app/index.js</div>
+        <div class="cards">
+          <article class="card" style="--i:0">
+            <sw-icon name="cube" size="20"></sw-icon>
+            <div>
+              <h2>Components</h2>
+              <p><code>SwitchComponent</code> + state live in <code>switch-framework</code>. Edit <code>app/index.js</code>.</p>
             </div>
-            <div class="row">
-              <div class="l">Dev tools</div>
-              <div class="r">F12</div>
+          </article>
+          <article class="card" style="--i:1">
+            <sw-icon name="route" size="20"></sw-icon>
+            <div>
+              <h2>Router</h2>
+              <p>Import <code>RootLayout</code>, <code>TabLayout</code>, and <code>navigate</code> from <code>switch-framework-router</code>.</p>
             </div>
-            <div class="row">
-              <div class="l">Components</div>
-              <div class="r">/components</div>
+          </article>
+          <article class="card" style="--i:2">
+            <sw-icon name="icons" size="20"></sw-icon>
+            <div>
+              <h2>Icons</h2>
+              <p><code>import 'switch-framework-icons'</code> then <code>&lt;sw-icon name="house"&gt;</code>. Classes stay <code>switch_icon_*</code>.</p>
             </div>
-          </div>
+          </article>
+          <article class="card" style="--i:3">
+            <sw-icon name="stethoscope" size="20"></sw-icon>
+            <div>
+              <h2>Doctor</h2>
+              <p>Optional CLI: <code>npx switch-framework-doctor</code> checks versions before the browser does.</p>
+            </div>
+          </article>
         </div>
 
-        <button id="go_home" class="btn-primary">Go To Tabs</button>
-
-        <div class="spacer-bottom"></div>
+        <button id="go_home" class="btn-primary" type="button">Open tabs</button>
       </div>
     `;
   }
@@ -79,191 +87,134 @@ export class SwIndexScreen extends SwitchComponent {
   styleSheet() {
     return `
       <style>
+        @import url('/switch-framework-icons/style.css');
+
         :host {
           display: block;
           width: 100%;
-          height: 100vh;
-          padding: 0;
+          min-height: 100%;
           font-family: var(--font);
           background: var(--page_background);
         }
 
-        * {
-          box-sizing: border-box;
-          font-family: var(--font);
-        }
+        * { box-sizing: border-box; font-family: inherit; }
 
         .wrap {
-          width: 100%;
-          height: 100%;
+          max-width: 560px;
+          margin: 0 auto;
+          min-height: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 0 16px;
-        }
-
-        .spacer-top {
-          flex: 0.5;
-          min-height: 20px;
+          justify-content: center;
+          gap: 28px;
+          padding: 48px 20px 32px;
         }
 
         .hero {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 24px;
           text-align: center;
+          gap: 12px;
+          animation: rise 0.7s ease both;
         }
 
         .logo-container {
+          width: 112px;
+          height: 112px;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 140px;
-          height: 140px;
-          border-radius: 40px;
-          animation: float 3s ease-in-out infinite;
+          animation: float 3.2s ease-in-out infinite;
         }
 
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-12px);
-          }
-        }
-
-        .logo {
-          width: 100px;
-          height: 100px;
-          object-fit: contain;
-        }
+        .logo { width: 88px; height: 88px; object-fit: contain; }
 
         .title {
-          font-family: 'Montserrat', sans-serif;
-          font-weight: 700;
-          color: var(--main_text, #000);
-          font-size: 42px;
-          line-height: 1.05;
-          letter-spacing: -0.8px;
+          margin: 0;
+          font-weight: 800;
+          font-size: clamp(28px, 6vw, 40px);
+          letter-spacing: -0.7px;
+          color: var(--main_text, #111);
         }
 
-        .spacer-middle {
-          flex: 1;
-          min-height: 30px;
+        .lede {
+          margin: 0;
+          max-width: 36ch;
+          color: var(--sub_text, #666);
+          font-weight: 600;
+          line-height: 1.45;
         }
 
-        .section {
+        .cards {
           width: 100%;
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          max-width: 400px;
-        }
-
-        .label {
-          font-weight: 600;
-          font-size: 12px;
-          letter-spacing: 1.2px;
-          color: var(--sub_text, #666);
-          text-transform: uppercase;
-          padding: 0 12px;
+          gap: 10px;
         }
 
         .card {
-          width: 100%;
-          background: var(--surface_3);
-          border-radius: 20px;
-          padding: 8px;
           display: flex;
-          flex-direction: column;
-          gap: 0;
-          overflow: hidden;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 14px 16px;
+          border-radius: 18px;
+          background: var(--surface_3, #f4f4f5);
+          animation: rise 0.6s ease both;
+          animation-delay: calc(0.12s * var(--i, 0) + 0.15s);
         }
 
-        :root[data-theme="dark"] .card {
-          background: rgba(255, 255, 255, 0.08);
-        }
+        .card sw-icon { color: var(--main_color, #4f46e5); margin-top: 2px; flex-shrink: 0; }
 
-        .row {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 12px 14px;
-          border-radius: 16px;
-          transition: background 0.2s ease;
-        }
-
-        .row:active {
-          background: rgba(0, 0, 0, 0.08);
-        }
-
-        :root[data-theme="dark"] .row {
-          background: rgba(255, 255, 255, 0.06);
-        }
-
-        :root[data-theme="dark"] .row:active {
-          background: rgba(255, 255, 255, 0.12);
-        }
-
-        .l {
-          font-weight: 600;
-          color: var(--main_text, #000);
+        .card h2 {
+          margin: 0 0 4px;
           font-size: 14px;
+          font-weight: 800;
+          color: var(--main_text, #111);
         }
 
-        .r {
-          font-weight: 500;
+        .card p {
+          margin: 0;
+          font-size: 13px;
+          line-height: 1.45;
           color: var(--sub_text, #666);
-          background: var(--surface_2);
-          padding: 6px 12px;
-          border-radius: 999px;
-          font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-          font-size: 11px;
-          white-space: nowrap;
+          font-weight: 600;
         }
 
-        :root[data-theme="dark"] .r {
-          background: rgba(255, 255, 255, 0.1);
+        .card code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 11px;
+          background: rgba(0,0,0,0.06);
+          padding: 1px 6px;
+          border-radius: 999px;
         }
 
         .btn-primary {
           width: 100%;
-          max-width: 400px;
           padding: 14px 20px;
-          margin-top: 20px;
-          margin-bottom: 0;
-          background: linear-gradient(135deg, var(--main_color) 0%, var(--main_color) 100%);
-          color: white;
           border: none;
           border-radius: 18px;
-          font-weight: 700;
+          background: var(--main_color, #4f46e5);
+          color: #fff;
+          font-weight: 800;
           font-size: 14px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          animation: rise 0.6s ease both;
+          animation-delay: 0.7s;
+          transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
-        .btn-primary:active {
-          transform: scale(0.97);
-          box-shadow: 0 4px 12px rgba(0, 145, 255, 0.2);
+        .btn-primary:active { transform: scale(0.98); }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
 
-        :root[data-theme="dark"] .btn-primary {
-          box-shadow: 0 8px 20px rgba(0, 145, 255, 0.3);
-        }
-
-        .spacer-bottom {
-          flex: 1;
-          min-height: 20px;
-        }
-
-        @media (max-width: 600px) {
-          .title {
-            font-size: 32px;
-          }
+        @keyframes rise {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: none; }
         }
       </style>
     `;

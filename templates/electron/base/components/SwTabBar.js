@@ -1,5 +1,6 @@
 import { SwitchComponent, registerComponent } from 'switch-framework';
-import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
+import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework-router';
+import 'switch-framework-icons';
 
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
@@ -15,7 +16,7 @@ export class SwTabBar extends SwitchComponent {
       navigate(route);
 
     });
-    this.addOnDestroy(this._unsub());
+    this.addOnDestroy(() => this._unsub?.());
   }
 
 
@@ -41,9 +42,11 @@ export class SwTabBar extends SwitchComponent {
 
   getIcon(name) {
     const map = {
-      home: `<span class='switch_icon_house'></span>`,
-      compass: `<span class='switch_icon_compass'></span>`,
-      settings: `<span class='switch_icon_gear'></span>`
+      home: `<sw-icon name="house"></sw-icon>`,
+      compass: `<sw-icon name="compass"></sw-icon>`,
+      plus: `<sw-icon name="plus"></sw-icon>`,
+      bookmark_border: `<sw-icon name="bookmark_border"></sw-icon>`,
+      settings: `<sw-icon name="gear"></sw-icon>`
     };
     return map[name] || map.home;
   }
@@ -69,7 +72,7 @@ export class SwTabBar extends SwitchComponent {
   styleSheet() {
     return `
       <style>
-        @import '/assets/icons/style.css';
+        @import url('/switch-framework-icons/style.css');
 
         :host {
           display: block;
@@ -133,6 +136,7 @@ export class SwTabBar extends SwitchComponent {
           font-size: 24px;
           line-height: 1;
         }
+        .icon sw-icon { font-size: inherit; color: inherit; }
 
         .label {
           display: block;

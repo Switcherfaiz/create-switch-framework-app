@@ -1,32 +1,4 @@
-/* Montserrat */
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-ThinItalic.ttf') format('truetype');
-  font-weight: 100;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-LightItalic.ttf') format('truetype');
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-}
+/* Montserrat — weights used by the starter screens */
 @font-face {
   font-family: 'Montserrat';
   src: url('/assets/fonts/Montserrat-Regular.ttf') format('truetype');
@@ -43,23 +15,9 @@
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-MediumItalic.ttf') format('truetype');
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
   src: url('/assets/fonts/Montserrat-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-SemiBoldItalic.ttf') format('truetype');
-  font-weight: 600;
-  font-style: italic;
   font-display: swap;
 }
 @font-face {
@@ -71,13 +29,6 @@
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-BoldItalic.ttf') format('truetype');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
   src: url('/assets/fonts/Montserrat-Black.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
@@ -85,67 +36,23 @@
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-BlackItalic.ttf') format('truetype');
-  font-weight: 800;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
   src: url('/assets/fonts/Montserrat-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-BlackItalic.ttf') format('truetype');
-  font-weight: 900;
-  font-style: italic;
   font-display: swap;
 }
 
-/* Regular */
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
-/* italic  */
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
-}
-/* bold */
-@font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
-}
-/* bold italic */
-@font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-BoldItalic.ttf') format('truetype');
-    font-weight: 900;
-    font-style: italic;
-}
-/* medium  */
-@font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-}
-/* medium italic */
-@font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-MediumItalic.ttf') format('truetype');
-    font-weight: 500;
-    font-style: italic;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
 } 
 
 
@@ -201,7 +108,7 @@
   --transition_fast:      0.12s ease;
   --transition_base:      0.2s ease;
   --transition_slow:      0.35s ease;
-  --font:                 'Montserrat', DMSans, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font:                 'Montserrat', 'DM Sans', -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
 body[data-theme="dark"] {

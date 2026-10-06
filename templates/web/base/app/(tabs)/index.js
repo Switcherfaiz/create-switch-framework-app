@@ -1,4 +1,5 @@
 import { SwitchComponent } from 'switch-framework';
+import 'switch-framework-icons';
 
 export class SwHomeScreen extends SwitchComponent {
   static screenName = 'home';
@@ -7,42 +8,37 @@ export class SwHomeScreen extends SwitchComponent {
   static tag = 'sw-home-screen';
   static layout = 'tabs';
 
-
-
   render() {
     return `
       <div class="wrap">
-        <div class="spacer-top"></div>
-        
         <div class="hero">
-          <div class="logo-container">
-            <img class="logo" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" />
+          <div class="orb">
+            <sw-icon name="house" size="36"></sw-icon>
           </div>
-          <div class="title">Tabs View</div>
+          <h1>You are in a tab</h1>
+          <p>This screen is a child of <code>TabLayout</code> from <code>switch-framework-router</code>. The bar below is <code>components/SwTabBar.js</code>.</p>
         </div>
-
-        <div class="spacer-middle"></div>
 
         <div class="section">
-          <div class="label">GET STARTED</div>
-          
-          <div class="card">
-            <div class="row">
-              <div class="l">Try editing</div>
-              <div class="r">/app/(tabs)/index.js</div>
+          <div class="label">Edit these files</div>
+          <div class="list">
+            <div class="row" style="--i:0">
+              <sw-icon name="file_code" size="16"></sw-icon>
+              <span class="l">This screen</span>
+              <span class="r">app/(tabs)/index.js</span>
             </div>
-            <div class="row">
-              <div class="l">Dev tools</div>
-              <div class="r">F12</div>
+            <div class="row" style="--i:1">
+              <sw-icon name="table_columns" size="16"></sw-icon>
+              <span class="l">Tabs layout</span>
+              <span class="r">app/(tabs)/_layout.js</span>
             </div>
-            <div class="row">
-              <div class="l">Components</div>
-              <div class="r">/components</div>
+            <div class="row" style="--i:2">
+              <sw-icon name="icons" size="16"></sw-icon>
+              <span class="l">Icon in the bar</span>
+              <span class="r">&lt;sw-icon name="house"&gt;</span>
             </div>
           </div>
         </div>
-
-        <div class="spacer-bottom"></div>
       </div>
     `;
   }
@@ -50,156 +46,114 @@ export class SwHomeScreen extends SwitchComponent {
   styleSheet() {
     return `
       <style>
+        @import url('/switch-framework-icons/style.css');
+
         :host {
           display: block;
           width: 100%;
-          padding: 0;
           font-family: var(--font);
           background: var(--page_background);
         }
 
-        * {
-          box-sizing: border-box;
-          font-family: 'Montserrat', sans-serif;
-        }
+        * { box-sizing: border-box; font-family: inherit; }
 
         .wrap {
-          width: 100%;
-          height: 100%;
+          max-width: 480px;
+          margin: 0 auto;
+          padding: 36px 16px 24px;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          padding: 0 16px;
+          gap: 28px;
         }
 
-        .spacer-top {
-          flex: 1;
-          min-height: 40px;
-        }
+        .hero { text-align: center; animation: rise 0.55s ease both; }
 
-        .hero {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-          text-align: center;
-        }
-
-        .logo-container {
+        .orb {
+          width: 88px;
+          height: 88px;
+          margin: 0 auto 16px;
+          border-radius: 28px;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 120px;
-          height: 120px;
-          background: linear-gradient(135deg, var(--main_color) 0%, #0073e6 100%);
-          border-radius: 32px;
-          box-shadow: 0 20px 40px rgba(0, 145, 255, 0.3);
+          color: #fff;
+          background: linear-gradient(145deg, var(--main_color, #4f46e5), #7c3aed);
+          box-shadow: 0 18px 36px rgba(79, 70, 229, 0.28);
+          animation: pop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
         }
 
-        .logo {
-          width: 70px;
-          height: 70px;
-          filter: brightness(0) invert(1);
-        }
-
-        .title {
-          font-family: 'Montserrat', sans-serif;
-          font-weight: 700;
-          color: var(--main_text, #000);
-          font-size: 36px;
-          line-height: 1.1;
+        h1 {
+          margin: 0 0 8px;
+          font-size: 28px;
+          font-weight: 800;
           letter-spacing: -0.5px;
+          color: var(--main_text, #111);
         }
 
-        .spacer-middle {
-          flex: 0.8;
-          min-height: 20px;
+        .hero p {
+          margin: 0 auto;
+          max-width: 38ch;
+          color: var(--sub_text, #666);
+          font-weight: 600;
+          line-height: 1.45;
         }
 
-        .section {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          max-width: 400px;
+        code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 11px;
+          background: rgba(0,0,0,0.06);
+          padding: 1px 6px;
+          border-radius: 999px;
         }
 
         .label {
-          font-weight: 600;
-          font-size: 12px;
+          font-size: 11px;
+          font-weight: 700;
           letter-spacing: 1.2px;
-          color: var(--sub_text, #666);
           text-transform: uppercase;
-          padding: 0 12px;
+          color: var(--sub_text, #666);
+          padding: 0 6px 8px;
         }
 
-        .card {
-          width: 100%;
-          background: var(--surface_3);
+        .list {
+          background: var(--surface_3, #f4f4f5);
           border-radius: 20px;
-          padding: 8px;
+          padding: 6px;
           display: flex;
           flex-direction: column;
-          gap: 0;
-          overflow: hidden;
-        }
-
-        :root[data-theme="dark"] .card {
-          background: rgba(255, 255, 255, 0.08);
         }
 
         .row {
-          width: 100%;
-          display: flex;
+          display: grid;
+          grid-template-columns: auto 1fr auto;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 12px 14px;
-          border-radius: 16px;
-          transition: background 0.2s ease;
+          gap: 10px;
+          padding: 12px 12px;
+          border-radius: 14px;
+          animation: rise 0.5s ease both;
+          animation-delay: calc(0.08s * var(--i, 0) + 0.2s);
         }
 
-        .row:active {
-          background: rgba(0, 0, 0, 0.08);
-        }
-
-        :root[data-theme="dark"] .row {
-          background: rgba(255, 255, 255, 0.06);
-        }
-
-        :root[data-theme="dark"] .row:active {
-          background: rgba(255, 255, 255, 0.12);
-        }
-
-        .l {
-          font-weight: 600;
-          color: var(--main_text, #000);
-          font-size: 14px;
-        }
-
+        .row sw-icon { color: var(--main_color, #4f46e5); }
+        .l { font-weight: 700; font-size: 14px; color: var(--main_text, #111); }
         .r {
-          font-weight: 500;
-          color: var(--sub_text, #666);
-          background: rgba(0, 0, 0, 0.05);
-          padding: 6px 12px;
-          border-radius: 999px;
-          font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
           font-size: 11px;
-          white-space: nowrap;
+          font-weight: 600;
+          color: var(--sub_text, #666);
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          background: rgba(0,0,0,0.05);
+          padding: 5px 10px;
+          border-radius: 999px;
         }
 
-        :root[data-theme="dark"] .r {
-          background: rgba(255, 255, 255, 0.1);
+        @keyframes pop {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: none; }
         }
 
-        .spacer-bottom {
-          flex: 1;
-          min-height: 20px;
-        }
-        @media (max-width: 600px) {
-          .title {
-            font-size: 32px;
-          }
+        @keyframes rise {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: none; }
         }
       </style>
     `;

@@ -1,31 +1,15 @@
 import { SwitchComponent } from 'switch-framework';
-import { navigate, goBack } from 'switch-framework/router';
+import { navigate, goBack } from 'switch-framework-router';
 
 export class SwUserNotFoundScreen extends SwitchComponent {
   static screenName = '+not-found';
   static path = '/+not-found';
   static title = 'Not Found';
   static tag = 'sw-user-not-found-screen';
-  static layout = 'stack';
 
-  static get observedAttributes() {
-    return ['path'];
-  }
-
-  attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'path' && oldVal !== newVal) {
-      this._renderToShadow();
-    }
-  }
-
-  connected() {
-    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      navigate('home');
-    });
-
-    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      goBack();
-    });
+  onMount() {
+    this.listener('#home', 'click', () => navigate('home'));
+    this.listener('#back', 'click', () => goBack());
   }
 
   render() {
